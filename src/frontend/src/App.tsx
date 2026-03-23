@@ -444,10 +444,10 @@ function CouplePhotoSection() {
       transition={{ duration: 0.9, ease: "easeOut" }}
     >
       <img
-        src="/assets/uploads/whatsapp_image_2026-03-23_at_10.14.21_pm-019d1be7-6fe9-74e2-a3c2-a8ccd729268-1.jpeg"
+        src="/assets/uploads/whatsapp_image_2026-03-23_at_10.14.21_pm-019d1c10-efdf-75c2-bbc6-166b216383f3-1.jpeg"
         alt="Amnaya and Priyanshu"
         className="w-full h-full object-cover"
-        style={{ filter: "brightness(0.7) contrast(1.1) saturate(0.6)" }}
+        style={{ filter: "grayscale(1) brightness(0.65) contrast(1.3)" }}
       />
       <div
         className="absolute inset-0 flex items-center justify-center"
@@ -1021,11 +1021,11 @@ function FAQSection() {
               }}
             >
               <img
-                src="/assets/uploads/whatsapp_image_2026-03-23_at_10.14.21_pm-019d1be7-6fe9-74e2-a3c2-a8ccd729268-1.jpeg"
+                src="/assets/uploads/whatsapp_image_2026-03-23_at_10.14.21_pm-019d1c10-efdf-75c2-bbc6-166b216383f3-1.jpeg"
                 alt="Amnaya and Priyanshu"
                 className="w-full h-full object-cover"
                 style={{
-                  filter: "brightness(0.75) contrast(1.1) saturate(0.5)",
+                  filter: "grayscale(1) brightness(0.65) contrast(1.3)",
                 }}
               />
             </div>
