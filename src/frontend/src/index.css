@@ -1,0 +1,122 @@
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Figtree";
+  src: url("/assets/fonts/Figtree.woff2") format("woff2");
+  font-weight: 300 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Parisienne";
+  src: url("/assets/fonts/Parisienne.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --radius: 1rem;
+
+    /* Core palette — gothic dark */
+    --background: 0.07 0.01 300;
+    --foreground: 0.92 0 0;
+
+    --card: 0.1 0.02 280;
+    --card-foreground: 0.92 0 0;
+
+    --popover: 0.1 0.02 280;
+    --popover-foreground: 0.92 0 0;
+
+    /* Primary = deep crimson/purple */
+    --primary: 0.4 0.15 330;
+    --primary-foreground: 0.95 0 0;
+
+    --secondary: 0.12 0.03 280;
+    --secondary-foreground: 0.85 0 0;
+
+    --muted: 0.13 0.02 280;
+    --muted-foreground: 0.6 0.02 280;
+
+    --accent: 0.15 0.05 300;
+    --accent-foreground: 0.9 0 0;
+
+    --destructive: 0.45 0.18 25;
+    --destructive-foreground: 0.95 0 0;
+
+    --border: 0.22 0.05 290;
+    --input: 0.22 0.05 290;
+    --ring: 0.4 0.12 330;
+
+    /* Wedding section backgrounds */
+    --pink-bg: oklch(0.08 0.02 300);
+    --coral-bg: oklch(0.1 0.03 280);
+    --blue-bg: oklch(0.08 0.01 250);
+    --white-bg: oklch(0.1 0 0);
+
+    --chart-1: 0.4 0.15 330;
+    --chart-2: 0.35 0.1 280;
+    --chart-3: 0.3 0.08 250;
+    --chart-4: 0.45 0.12 300;
+    --chart-5: 0.38 0.1 320;
+
+    --sidebar: 0.08 0.02 300;
+    --sidebar-foreground: 0.9 0 0;
+    --sidebar-primary: 0.4 0.15 330;
+    --sidebar-primary-foreground: 0.95 0 0;
+    --sidebar-accent: 0.12 0.03 280;
+    --sidebar-accent-foreground: 0.85 0 0;
+    --sidebar-border: 0.22 0.05 290;
+    --sidebar-ring: 0.4 0.12 330;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+}
+
+/* Section backgrounds */
+.section-pink {
+  background-color: var(--pink-bg);
+}
+.section-coral {
+  background-color: var(--coral-bg);
+}
+.section-blue {
+  background-color: var(--blue-bg);
+}
+.section-white {
+  background-color: var(--white-bg);
+}
+
+/* Dashed border frame — gothic silver/purple */
+.dashed-frame {
+  border: 2px dashed oklch(0.5 0.12 300);
+  border-radius: 1rem;
+}
+
+.script-heading {
+  font-family: "Dancing Script", "Parisienne", cursive;
+}
+
+/* Schedule table styles */
+.schedule-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 1.5rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid oklch(0.25 0.05 280);
+  align-items: center;
+}
+.schedule-row:last-child {
+  border-bottom: none;
+}
