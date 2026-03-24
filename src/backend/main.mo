@@ -15,6 +15,9 @@ actor {
   // Initialize the invite links system state
   let inviteState = InviteLinksModule.initState();
 
+  // Seed the shared invite code "MUSA" for all guests
+  InviteLinksModule.generateInviteCode(inviteState, "MUSA");
+
   public type SongRequest = {
     title : Text;
     artist : Text;

@@ -1,8 +1,22 @@
 import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ChevronDown, Instagram, Loader2, Mail, Phone } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Instagram,
+  Loader2,
+  Mail,
+  Pause,
+  Phone,
+  Play,
+  Volume2,
+  VolumeX,
+  X,
+} from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { forwardRef, useRef, useState } from "react";
+import type React from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { SiFacebook } from "react-icons/si";
 import { toast } from "sonner";
 import { useAddSongRequest, useSubmitRSVP } from "./hooks/useQueries";
@@ -222,9 +236,210 @@ const floatingElements = [
   { id: 6, left: "92%", delay: 1.7, duration: 5.8, size: 11, color: "#6a1a6a" },
 ];
 
+// ── Floating Rose Petals ─────────────────────────────────────────
+const petalElements = [
+  { id: 1, left: "5%", delay: 0, duration: 8.0, size: 16 },
+  { id: 2, left: "18%", delay: 1.5, duration: 9.5, size: 12 },
+  { id: 3, left: "35%", delay: 0.8, duration: 7.5, size: 20 },
+  { id: 4, left: "52%", delay: 2.3, duration: 10.0, size: 14 },
+  { id: 5, left: "68%", delay: 0.4, duration: 8.5, size: 18 },
+  { id: 6, left: "82%", delay: 1.9, duration: 7.0, size: 11 },
+  { id: 7, left: "93%", delay: 3.1, duration: 9.0, size: 15 },
+  { id: 8, left: "44%", delay: 4.0, duration: 8.2, size: 13 },
+];
+
+function FloatingPetals() {
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none overflow-hidden"
+      aria-hidden="true"
+    >
+      {petalElements.map((p) => (
+        <div
+          key={p.id}
+          style={{
+            position: "absolute",
+            left: p.left,
+            top: "-30px",
+            fontSize: p.size,
+            animationName: "petal-fall",
+            animationDuration: `${p.duration}s`,
+            animationDelay: `${p.delay}s`,
+            animationTimingFunction: "linear",
+            animationIterationCount: "infinite",
+            animationFillMode: "both",
+            color: "#8B1A1A",
+            filter: "drop-shadow(0 0 3px rgba(139,26,26,0.5))",
+          }}
+        >
+          🌹
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Heartbeat Section Divider ────────────────────────────────────
+function HeartbeatDivider() {
+  return (
+    <div
+      className="flex items-center justify-center py-4"
+      aria-hidden="true"
+      style={{ background: "transparent" }}
+    >
+      <div
+        className="h-px flex-1 max-w-32"
+        style={{
+          background:
+            "linear-gradient(to right, transparent, oklch(0.35 0.1 290))",
+        }}
+      />
+      <div className="mx-4 heartbeat">
+        <HeartSvg size={22} color="#8B1A1A" />
+      </div>
+      <div
+        className="h-px flex-1 max-w-32"
+        style={{
+          background:
+            "linear-gradient(to left, transparent, oklch(0.35 0.1 290))",
+        }}
+      />
+    </div>
+  );
+}
+
+// ── Music Player ──────────────────────────────────────────────────────────
+// Dildaara from Ra.One (YouTube)
+function MusicPlayer({
+  onRegisterToggle,
+}: { onRegisterToggle?: (fn: () => void) => void }) {
+  const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (playing) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.muted = false;
+      setMuted(false);
+      audioRef.current.play().catch(() => {});
+    }
+    setPlaying((p) => !p);
+  };
+
+  // Register togglePlay with parent
+  // biome-ignore lint/correctness/useExhaustiveDependencies: register once
+  useEffect(() => {
+    onRegisterToggle?.(togglePlay);
+  }, []);
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !muted;
+    }
+    setMuted((m) => !m);
+  };
+
+  return (
+    <div
+      className="fixed bottom-6 left-6 z-50 flex items-center gap-2"
+      aria-label="Music player"
+    >
+      {/* Hidden audio element */}
+      {/* biome-ignore lint/a11y/useMediaCaption: background music track */}
+      <audio
+        ref={audioRef}
+        src="/assets/dildaara_stand_by_me_2011-019d1c43-f86a-706d-b7c3-16fa9b32fe39.mp3"
+        loop
+        preload="none"
+        muted={muted}
+      />
+
+      {/* Player pill */}
+      <motion.div
+        className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold"
+        style={{
+          background: "oklch(0.1 0.04 300 / 0.92)",
+          border: "1px solid oklch(0.35 0.12 300)",
+          backdropFilter: "blur(10px)",
+          color: "oklch(0.85 0.08 300)",
+          boxShadow: "0 4px 20px oklch(0.1 0.04 300 / 0.6)",
+        }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1, duration: 0.6 }}
+      >
+        <button
+          type="button"
+          onClick={togglePlay}
+          aria-label={playing ? "Pause music" : "Play music"}
+          className="hover:opacity-80 transition-opacity"
+        >
+          {playing ? (
+            <Pause className="w-4 h-4" />
+          ) : (
+            <Play className="w-4 h-4" />
+          )}
+        </button>
+
+        {/* Animated bars when playing */}
+        <AnimatePresence>
+          {playing && (
+            <motion.div
+              className="flex items-end gap-0.5 h-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              aria-hidden="true"
+            >
+              {([0.4, 0.7, 1, 0.6, 0.8] as const).map((h, i) => (
+                <motion.div
+                  // biome-ignore lint/suspicious/noArrayIndexKey: static list
+                  key={i}
+                  className="w-1 rounded-sm"
+                  style={{ background: "oklch(0.55 0.15 330)" }}
+                  animate={{ scaleY: [h, 1, h * 0.5, 0.9, h] }}
+                  transition={{
+                    repeat: Number.POSITIVE_INFINITY,
+                    duration: 0.8 + i * 0.1,
+                    ease: "easeInOut",
+                  }}
+                  initial={{ height: 12, originY: 1 }}
+                />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <span className="hidden sm:inline max-w-[120px] truncate">
+          Dildaara · Ra.One
+        </span>
+
+        {playing && (
+          <button
+            type="button"
+            onClick={toggleMute}
+            aria-label={muted ? "Unmute" : "Mute"}
+            className="hover:opacity-80 transition-opacity"
+          >
+            {muted ? (
+              <VolumeX className="w-4 h-4" />
+            ) : (
+              <Volume2 className="w-4 h-4" />
+            )}
+          </button>
+        )}
+      </motion.div>
+    </div>
+  );
+}
+
 // ── Wedding Website ────────────────────────────────────────────────────────
 function WeddingWebsite() {
   const rsvpRef = useRef<HTMLDivElement>(null);
+  const musicToggleRef = useRef<(() => void) | null>(null);
 
   const scrollToRSVP = () => {
     rsvpRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -232,24 +447,59 @@ function WeddingWebsite() {
 
   return (
     <main>
-      <HeroSection onRSVP={scrollToRSVP} />
+      <HeroSection
+        onRSVP={scrollToRSVP}
+        onMusicNote={() => musicToggleRef.current?.()}
+      />
+      <HeartbeatDivider />
       <CouplePhotoSection />
+      <HeartbeatDivider />
       <OurStorySection />
+      <HeartbeatDivider />
       <BasicStuffSection />
+      <HeartbeatDivider />
       <ScheduleSection />
+      <HeartbeatDivider />
       <FAQSection />
+      <HeartbeatDivider />
       <RSVPSection ref={rsvpRef} />
+      <HeartbeatDivider />
+      <PhotoGallerySection />
+      <HeartbeatDivider />
       <FooterSection />
+      <MusicPlayer
+        onRegisterToggle={(fn) => {
+          musicToggleRef.current = fn;
+        }}
+      />
     </main>
   );
 }
 
 // ── 1. Hero ────────────────────────────────────────────────────────────────
-function HeroSection({ onRSVP }: { onRSVP: () => void }) {
+function HeroSection({
+  onRSVP,
+  onMusicNote,
+}: { onRSVP: () => void; onMusicNote?: () => void }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [parallaxY, setParallaxY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!sectionRef.current) return;
+      const scrolled = window.scrollY;
+      setParallaxY(scrolled * 0.3);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       className="section-pink relative overflow-hidden min-h-screen flex items-center justify-center"
       data-ocid="hero.section"
+      style={{ backgroundPositionY: `${parallaxY}px` }}
     >
       {/* Floating hearts in background */}
       {floatingElements.map((el) => (
@@ -269,6 +519,9 @@ function HeroSection({ onRSVP }: { onRSVP: () => void }) {
           <HeartSvg size={el.size} color={el.color} />
         </motion.div>
       ))}
+
+      {/* Floating rose petals */}
+      <FloatingPetals />
 
       {/* Animated corner decorations */}
       <motion.div
@@ -342,31 +595,76 @@ function HeroSection({ onRSVP }: { onRSVP: () => void }) {
         </div>
 
         <p
-          className="text-xs uppercase tracking-[0.25em] font-semibold"
+          className="text-xs uppercase tracking-[0.25em] font-semibold glow-pulse"
           style={{ color: "oklch(0.65 0.1 300)" }}
         >
           Together with their families
         </p>
 
-        <h1
-          className="script-heading text-6xl md:text-7xl my-4 leading-tight"
-          style={{ color: "oklch(0.95 0 0)" }}
-        >
-          Amnaya
-          <br />
-          <span className="text-4xl" style={{ color: "oklch(0.65 0.12 300)" }}>
-            &amp;
-          </span>
-          <br />
-          Priyanshu
-        </h1>
+        <div className="relative inline-block my-4">
+          <h1
+            className="script-heading text-6xl md:text-7xl leading-tight relative z-10"
+            style={{ color: "oklch(0.95 0 0)" }}
+          >
+            {"Amnaya".split("").map((letter, i) => (
+              <motion.span
+                key={`amnaya-letter-${i}-${letter}`}
+                initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{
+                  delay: 0.3 + i * 0.07,
+                  duration: 0.45,
+                  ease: "easeOut",
+                }}
+                style={{ display: "inline-block" }}
+              >
+                {letter}
+              </motion.span>
+            ))}
+            <br />
+            <motion.span
+              className="text-4xl"
+              style={{ color: "oklch(0.65 0.12 300)", display: "inline-block" }}
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.9, duration: 0.5, ease: "backOut" }}
+            >
+              &amp;
+            </motion.span>
+            <br />
+            {"Priyanshu".split("").map((letter, i) => (
+              <motion.span
+                key={`priyanshu-letter-${i}-${letter}`}
+                initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{
+                  delay: 1.0 + i * 0.07,
+                  duration: 0.45,
+                  ease: "easeOut",
+                }}
+                style={{ display: "inline-block" }}
+              >
+                {letter}
+              </motion.span>
+            ))}
+          </h1>
+        </div>
 
         <div className="flex items-center justify-center gap-3 my-4">
           <div
             className="h-px w-12"
             style={{ background: "oklch(0.45 0.1 300)" }}
           />
-          <MusicNoteSvg />
+          <button
+            type="button"
+            onClick={onMusicNote}
+            aria-label="Play Dildaara"
+            title="Play Dildaara"
+            className="cursor-pointer hover:scale-125 transition-transform active:scale-95"
+            style={{ background: "none", border: "none", padding: 0 }}
+          >
+            <MusicNoteSvg />
+          </button>
           <div
             className="h-px w-12"
             style={{ background: "oklch(0.45 0.1 300)" }}
@@ -437,25 +735,37 @@ function CouplePhotoSection() {
   return (
     <motion.section
       className="relative w-full overflow-hidden"
-      style={{ height: "420px" }}
+      style={{ height: "480px" }}
       initial={{ opacity: 0, scale: 1.04 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.9, ease: "easeOut" }}
     >
-      <img
-        src="/assets/uploads/whatsapp_image_2026-03-23_at_10.14.21_pm-019d1c10-efdf-75c2-bbc6-166b216383f3-1.jpeg"
-        alt="Amnaya and Priyanshu"
-        className="w-full h-full object-cover"
-        style={{ filter: "grayscale(1) brightness(0.65) contrast(1.3)" }}
-      />
-      <div
-        className="absolute inset-0 flex items-center justify-center"
-        style={{
-          background:
-            "linear-gradient(to bottom, oklch(0.05 0.02 300 / 0.5) 0%, oklch(0.05 0.02 300 / 0.75) 100%)",
-        }}
-      >
+      <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden photo-zoom-wrap">
+        <img
+          src="/assets/uploads/whatsapp_image_2026-03-23_at_10.14.21_pm-019d1c10-efdf-75c2-bbc6-166b216383f3-1.jpeg"
+          alt="Amnaya and Priyanshu"
+          className="absolute inset-0 w-full h-full object-cover object-top"
+          style={{ filter: "grayscale(1) brightness(0.65) contrast(1.3)" }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{ background: "oklch(0.05 0.02 300 / 0.4)" }}
+        />
+      </div>
+      <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden photo-zoom-wrap">
+        <img
+          src="/assets/uploads/whatsapp_image_2026-03-23_at_10.14.21_pm-019d1c2f-4968-76de-ab6a-6b6a418002f9-1.jpeg"
+          alt="Amnaya and Priyanshu"
+          className="absolute inset-0 w-full h-full object-cover object-top"
+          style={{ filter: "grayscale(1) brightness(0.65) contrast(1.3)" }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{ background: "oklch(0.05 0.02 300 / 0.4)" }}
+        />
+      </div>
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <motion.p
           className="script-heading text-5xl text-white drop-shadow-xl"
           style={{ textShadow: "0 2px 30px rgba(0,0,0,0.9)" }}
@@ -916,7 +1226,7 @@ function ScheduleSection() {
             {scheduleItems.map((item, idx) => (
               <motion.div
                 key={item.time}
-                className="schedule-row px-6"
+                className="schedule-row px-6 shimmer-card"
                 data-ocid={`schedule.item.${idx + 1}`}
                 initial={{ x: -50, opacity: 0 }}
                 whileInView={{ x: 0, opacity: 1 }}
@@ -960,7 +1270,7 @@ function ScheduleSection() {
 const faqs = [
   {
     q: "How should I RSVP?",
-    a: "Scroll down to the RSVP section, enter your name and invite code, and let us know if you can make it!",
+    a: "Scroll down to the RSVP section, enter your name, and let us know if you can make it!",
   },
   {
     q: "Can I bring a plus one?",
@@ -1072,7 +1382,7 @@ function FAQSection() {
 // ── 7. RSVP ───────────────────────────────────────────────────────────────
 const RSVPSection = forwardRef<HTMLDivElement>((_, ref) => {
   const [name, setName] = useState("");
-  const [inviteCode, setInviteCode] = useState("");
+  const [inviteCode] = useState("MUSA");
   const [attending, setAttending] = useState<boolean | null>(null);
   const { mutate, isPending, isSuccess } = useSubmitRSVP();
 
@@ -1204,29 +1514,6 @@ const RSVPSection = forwardRef<HTMLDivElement>((_, ref) => {
               </div>
 
               <div>
-                <label
-                  htmlFor="rsvp-code"
-                  className="block text-xs font-semibold uppercase tracking-wider mb-1"
-                  style={{ color: "oklch(0.65 0.08 290)" }}
-                >
-                  Invite Code
-                </label>
-                <input
-                  id="rsvp-code"
-                  value={inviteCode}
-                  onChange={(e) => setInviteCode(e.target.value)}
-                  placeholder="Enter your invite code"
-                  data-ocid="rsvp.input"
-                  className="w-full border rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2"
-                  style={{
-                    borderColor: "oklch(0.3 0.08 290)",
-                    background: "oklch(0.08 0.02 280)",
-                    color: "oklch(0.9 0 0)",
-                  }}
-                />
-              </div>
-
-              <div>
                 <p
                   className="block text-xs font-semibold uppercase tracking-wider mb-2"
                   style={{ color: "oklch(0.65 0.08 290)" }}
@@ -1252,7 +1539,7 @@ const RSVPSection = forwardRef<HTMLDivElement>((_, ref) => {
                         attending === true ? "white" : "oklch(0.65 0.08 290)",
                     }}
                   >
-                    ✓ Joyfully Accept
+                    Joyfully Accept
                   </button>
                   <button
                     type="button"
@@ -1272,7 +1559,7 @@ const RSVPSection = forwardRef<HTMLDivElement>((_, ref) => {
                         attending === false ? "white" : "oklch(0.65 0.08 290)",
                     }}
                   >
-                    ✗ Regretfully Decline
+                    Regretfully Decline
                   </button>
                 </div>
               </div>
@@ -1302,7 +1589,175 @@ const RSVPSection = forwardRef<HTMLDivElement>((_, ref) => {
 
 RSVPSection.displayName = "RSVPSection";
 
-// ── 8. Footer ─────────────────────────────────────────────────────────────
+// ── 8. Photo Gallery ─────────────────────────────────────────────────────
+const galleryPhotos = [
+  "/assets/uploads/whatsapp_image_2026-03-23_at_10.14.21_pm-019d1be7-6fe9-74c2-a3c2-a8ccd359aa1e-1.jpeg",
+  "/assets/uploads/whatsapp_image_2026-03-23_at_10.14.21_pm-019d1c10-efdf-75c2-bbc6-166b216383f3-1.jpeg",
+  "/assets/uploads/whatsapp_image_2026-03-23_at_10.14.21_pm-019d1c2f-4968-76de-ab6a-6b6a418002f9-1.jpeg",
+];
+
+function PhotoGallerySection() {
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  const openLightbox = (i: number) => setLightboxIndex(i);
+  const closeLightbox = () => setLightboxIndex(null);
+  const goPrev = () =>
+    setLightboxIndex((i) =>
+      i !== null ? (i - 1 + galleryPhotos.length) % galleryPhotos.length : 0,
+    );
+  const goNext = () =>
+    setLightboxIndex((i) => (i !== null ? (i + 1) % galleryPhotos.length : 0));
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxIndex(null);
+      if (e.key === "ArrowLeft")
+        setLightboxIndex((i) =>
+          i !== null
+            ? (i - 1 + galleryPhotos.length) % galleryPhotos.length
+            : 0,
+        );
+      if (e.key === "ArrowRight")
+        setLightboxIndex((i) =>
+          i !== null ? (i + 1) % galleryPhotos.length : 0,
+        );
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lightboxIndex]);
+
+  return (
+    <>
+      <motion.section
+        className="py-20 px-6"
+        style={{ background: "oklch(0.07 0.02 290)" }}
+        data-ocid="gallery.section"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.7 }}
+      >
+        <div className="max-w-5xl mx-auto">
+          <motion.h2
+            className="script-heading text-5xl md:text-6xl text-center mb-12"
+            style={{ color: "oklch(0.85 0.08 30)" }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            Our Moments
+          </motion.h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {galleryPhotos.map((src, i) => (
+              <motion.div
+                key={src}
+                className="relative overflow-hidden cursor-pointer group"
+                style={{ aspectRatio: "1 / 1", borderRadius: "4px" }}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.15 }}
+                onClick={() => openLightbox(i)}
+                data-ocid={`gallery.item.${i + 1}`}
+                whileHover={{ scale: 1.02 }}
+              >
+                <img
+                  src={src}
+                  alt={`Amnaya and Priyanshu moment ${i + 1}`}
+                  className="absolute inset-0 w-full h-full object-cover object-top transition-all duration-500"
+                  style={{
+                    filter: "grayscale(1) brightness(0.65) contrast(1.3)",
+                  }}
+                />
+                <div
+                  className="absolute inset-0 transition-all duration-500 opacity-0 group-hover:opacity-100"
+                  style={{
+                    boxShadow:
+                      "inset 0 0 0 2px oklch(0.55 0.22 25), inset 0 0 30px oklch(0.55 0.22 25 / 0.3)",
+                  }}
+                />
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  <img
+                    src={src}
+                    alt=""
+                    aria-hidden
+                    className="absolute inset-0 w-full h-full object-cover object-top"
+                    style={{
+                      filter: "grayscale(0.3) brightness(0.8) contrast(1.1)",
+                    }}
+                  />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
+
+      <AnimatePresence>
+        {lightboxIndex !== null && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ background: "oklch(0.04 0.01 290 / 0.96)" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={closeLightbox}
+            data-ocid="gallery.modal"
+          >
+            <motion.div
+              className="relative max-w-3xl w-full mx-4"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={galleryPhotos[lightboxIndex]}
+                alt={`Amnaya and Priyanshu moment ${lightboxIndex + 1}`}
+                className="w-full h-auto max-h-[80vh] object-contain rounded-sm"
+                style={{ boxShadow: "0 0 60px oklch(0.55 0.22 25 / 0.4)" }}
+              />
+              <button
+                type="button"
+                onClick={closeLightbox}
+                className="absolute -top-4 -right-4 w-9 h-9 flex items-center justify-center rounded-full text-white transition-opacity hover:opacity-70"
+                style={{ background: "oklch(0.55 0.22 25)" }}
+                data-ocid="gallery.close_button"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={goPrev}
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full text-white transition-opacity hover:opacity-70"
+                style={{ background: "oklch(0.15 0.04 290 / 0.85)" }}
+                data-ocid="gallery.pagination_prev"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                type="button"
+                onClick={goNext}
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full text-white transition-opacity hover:opacity-70"
+                style={{ background: "oklch(0.15 0.04 290 / 0.85)" }}
+                data-ocid="gallery.pagination_next"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+// ── 9. Footer ─────────────────────────────────────────────────────────────
 function FooterSection() {
   const year = new Date().getFullYear();
   const utmLink = `https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`;
@@ -1381,7 +1836,7 @@ function FooterSection() {
         />
 
         <p className="text-xs" style={{ color: "oklch(0.45 0.04 280)" }}>
-          © {year}. Built with ❤️ using{" "}
+          © {year}. Built with love using{" "}
           <a
             href={utmLink}
             target="_blank"
