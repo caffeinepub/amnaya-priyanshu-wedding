@@ -1,4 +1,3 @@
-import FlyingCompanion from "@/components/FlyingCompanion";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -1334,7 +1333,7 @@ function FAQSection() {
               }}
             >
               <img
-                src="/assets/uploads/whatsapp_image_2026-03-23_at_10.14.21_pm-019d1c10-efdf-75c2-bbc6-166b216383f3-1.jpeg"
+                src="/assets/uploads/whatsapp_image_2026-03-24_at_8.27.19_am-019d1dc9-d38d-7786-aff5-6b8e919b256c-1.jpeg"
                 alt="Amnaya and Priyanshu"
                 className="w-full h-full object-cover"
                 style={{
@@ -1595,11 +1594,11 @@ RSVPSection.displayName = "RSVPSection";
 // ── 8. Photo Gallery ─────────────────────────────────────────────────────
 const galleryPhotos = [
   {
-    src: "/assets/uploads/whatsapp_image_2026-03-23_at_10.14.21_pm-019d1be7-6fe9-74c2-a3c2-a8ccd359aa1e-1.jpeg",
-    caption: "A Beautiful Moment",
+    src: "/assets/uploads/whatsapp_image_2026-03-24_at_8.57.05_am-019d1de2-2608-7483-b4ab-5ac7d41e38c0-1.jpeg",
+    caption: "Under the Stars",
   },
   {
-    src: "/assets/uploads/whatsapp_image_2026-03-23_at_10.14.21_pm-019d1c10-efdf-75c2-bbc6-166b216383f3-1.jpeg",
+    src: "/assets/uploads/whatsapp_image_2026-03-24_at_8.27.19_am-019d1dc9-d38d-7786-aff5-6b8e919b256c-1.jpeg",
     caption: "Together Forever",
   },
   {
@@ -1610,9 +1609,21 @@ const galleryPhotos = [
 
 function PhotoGallerySection() {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [slideDirection, setSlideDirection] = useState(1);
 
   const openLightbox = (i: number) => setLightboxIndex(i);
   const closeLightbox = () => setLightboxIndex(null);
+  const goPrevSlide = () => {
+    setSlideDirection(-1);
+    setCurrentSlide(
+      (i) => (i - 1 + galleryPhotos.length) % galleryPhotos.length,
+    );
+  };
+  const goNextSlide = () => {
+    setSlideDirection(1);
+    setCurrentSlide((i) => (i + 1) % galleryPhotos.length);
+  };
   const goPrev = () =>
     setLightboxIndex((i) =>
       i !== null ? (i - 1 + galleryPhotos.length) % galleryPhotos.length : 0,
@@ -1742,261 +1753,158 @@ function PhotoGallerySection() {
             </div>
           </motion.div>
 
-          {/* Masonry-style Grid: photo 1 spans 2 rows on left, photos 2+3 stacked right */}
-          <div
-            className="grid gap-4"
-            style={{
-              gridTemplateColumns: "repeat(12, 1fr)",
-              gridAutoRows: "240px",
-            }}
-          >
-            {/* Photo 1 - Large, left side, 2 rows tall */}
-            <motion.div
-              className="relative overflow-hidden cursor-pointer group"
-              style={{
-                gridColumn: "1 / 8",
-                gridRow: "1 / 3",
-                borderRadius: "2px",
-                border: "1px solid oklch(0.55 0.22 25 / 0.2)",
-              }}
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              onClick={() => openLightbox(0)}
-              data-ocid="gallery.item.1"
-              whileHover={{ scale: 1.01 }}
-            >
-              <img
-                src={galleryPhotos[0].src}
-                alt="Amnaya and Priyanshu moment 1"
-                className="absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 group-hover:scale-105"
+          {/* Slideshow Carousel */}
+          <div className="max-w-3xl mx-auto relative">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={currentSlide}
+                className="relative overflow-hidden cursor-pointer group"
                 style={{
-                  filter: "grayscale(1) brightness(0.65) contrast(1.35)",
+                  borderRadius: "2px",
+                  border: "1px solid oklch(0.55 0.22 25 / 0.3)",
+                  height: "500px",
                 }}
-              />
-              <img
-                src={galleryPhotos[0].src}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 opacity-0 group-hover:opacity-100 group-hover:scale-105"
-                style={{
-                  filter: "brightness(0.75) contrast(1.1) saturate(1.2)",
-                }}
-              />
-              <div
-                className="absolute inset-0 transition-all duration-500 opacity-0 group-hover:opacity-100"
-                style={{
-                  boxShadow:
-                    "inset 0 0 0 2px oklch(0.55 0.22 25), inset 0 0 40px oklch(0.55 0.22 25 / 0.25)",
-                }}
-              />
-              <div
-                className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-500"
-                style={{
-                  background:
-                    "linear-gradient(to top, oklch(0.04 0.01 290 / 0.95), transparent)",
-                  padding: "40px 20px 20px",
-                }}
+                initial={{ x: slideDirection > 0 ? 300 : -300, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: slideDirection > 0 ? -300 : 300, opacity: 0 }}
+                transition={{ duration: 0.45, ease: "easeInOut" }}
+                onClick={() => openLightbox(currentSlide)}
+                data-ocid="gallery.canvas_target"
               >
-                <p
-                  className="text-center text-xl"
+                <img
+                  src={galleryPhotos[currentSlide].src}
+                  alt={`Amnaya and Priyanshu moment ${currentSlide + 1}`}
+                  className="absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 group-hover:scale-105"
                   style={{
-                    fontFamily: "Parisienne, cursive",
-                    color: "oklch(0.85 0.08 30)",
+                    filter: "grayscale(1) brightness(0.65) contrast(1.35)",
+                  }}
+                />
+                <img
+                  src={galleryPhotos[currentSlide].src}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 opacity-0 group-hover:opacity-100 group-hover:scale-105"
+                  style={{
+                    filter: "brightness(0.75) contrast(1.1) saturate(1.2)",
+                  }}
+                />
+                <div
+                  className="absolute inset-0 transition-all duration-500 opacity-0 group-hover:opacity-100"
+                  style={{
+                    boxShadow:
+                      "inset 0 0 0 2px oklch(0.55 0.22 25), inset 0 0 40px oklch(0.55 0.22 25 / 0.25)",
+                  }}
+                />
+                <div
+                  className="absolute bottom-0 left-0 right-0"
+                  style={{
+                    background:
+                      "linear-gradient(to top, oklch(0.04 0.01 290 / 0.95) 0%, transparent 100%)",
+                    padding: "60px 24px 24px",
                   }}
                 >
-                  {galleryPhotos[0].caption}
-                </p>
-              </div>
-              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div
-                  className="w-8 h-8 flex items-center justify-center rounded-full"
-                  style={{ background: "oklch(0.55 0.22 25 / 0.8)" }}
-                >
-                  <Maximize2 className="w-4 h-4 text-white" />
+                  <p
+                    className="text-center text-xl"
+                    style={{
+                      fontFamily: "Parisienne, cursive",
+                      color: "oklch(0.85 0.08 30)",
+                    }}
+                  >
+                    {galleryPhotos[currentSlide].caption}
+                  </p>
                 </div>
-              </div>
-            </motion.div>
+                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div
+                    className="w-8 h-8 flex items-center justify-center rounded-full"
+                    style={{ background: "oklch(0.55 0.22 25 / 0.8)" }}
+                  >
+                    <Maximize2 className="w-4 h-4 text-white" />
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
 
-            {/* Photo 2 - Top right */}
-            <motion.div
-              className="relative overflow-hidden cursor-pointer group"
-              style={{
-                gridColumn: "8 / 13",
-                gridRow: "1 / 2",
-                borderRadius: "2px",
-                border: "1px solid oklch(0.6 0.25 310 / 0.2)",
-              }}
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
-              onClick={() => openLightbox(1)}
-              data-ocid="gallery.item.2"
-              whileHover={{ scale: 1.01 }}
+            <button
+              type="button"
+              onClick={goPrevSlide}
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-11 h-11 flex items-center justify-center rounded-full text-white transition-all hover:opacity-80 hover:scale-110"
+              style={{ background: "oklch(0.55 0.22 25)" }}
+              data-ocid="gallery.pagination_prev"
             >
-              <img
-                src={galleryPhotos[1].src}
-                alt="Amnaya and Priyanshu moment 2"
-                className="absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 group-hover:scale-105"
-                style={{
-                  filter: "grayscale(1) brightness(0.65) contrast(1.35)",
-                }}
-              />
-              <img
-                src={galleryPhotos[1].src}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 opacity-0 group-hover:opacity-100 group-hover:scale-105"
-                style={{
-                  filter: "brightness(0.75) contrast(1.1) saturate(1.2)",
-                }}
-              />
-              <div
-                className="absolute inset-0 transition-all duration-500 opacity-0 group-hover:opacity-100"
-                style={{
-                  boxShadow:
-                    "inset 0 0 0 2px oklch(0.6 0.25 310), inset 0 0 30px oklch(0.6 0.25 310 / 0.25)",
-                }}
-              />
-              <div
-                className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-500"
-                style={{
-                  background:
-                    "linear-gradient(to top, oklch(0.04 0.01 290 / 0.95), transparent)",
-                  padding: "28px 16px 16px",
-                }}
-              >
-                <p
-                  className="text-center text-base"
-                  style={{
-                    fontFamily: "Parisienne, cursive",
-                    color: "oklch(0.85 0.08 30)",
-                  }}
-                >
-                  {galleryPhotos[1].caption}
-                </p>
-              </div>
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div
-                  className="w-7 h-7 flex items-center justify-center rounded-full"
-                  style={{ background: "oklch(0.6 0.25 310 / 0.8)" }}
-                >
-                  <Maximize2 className="w-3 h-3 text-white" />
-                </div>
-              </div>
-            </motion.div>
+              <ChevronLeft className="w-5 h-5" />
+            </button>
 
-            {/* Photo 3 - Bottom right */}
-            <motion.div
-              className="relative overflow-hidden cursor-pointer group"
-              style={{
-                gridColumn: "8 / 13",
-                gridRow: "2 / 3",
-                borderRadius: "2px",
-                border: "1px solid oklch(0.55 0.22 25 / 0.2)",
-              }}
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-              onClick={() => openLightbox(2)}
-              data-ocid="gallery.item.3"
-              whileHover={{ scale: 1.01 }}
+            <button
+              type="button"
+              onClick={goNextSlide}
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-11 h-11 flex items-center justify-center rounded-full text-white transition-all hover:opacity-80 hover:scale-110"
+              style={{ background: "oklch(0.55 0.22 25)" }}
+              data-ocid="gallery.pagination_next"
             >
-              <img
-                src={galleryPhotos[2].src}
-                alt="Amnaya and Priyanshu moment 3"
-                className="absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 group-hover:scale-105"
-                style={{
-                  filter: "grayscale(1) brightness(0.65) contrast(1.35)",
-                }}
-              />
-              <img
-                src={galleryPhotos[2].src}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 opacity-0 group-hover:opacity-100 group-hover:scale-105"
-                style={{
-                  filter: "brightness(0.75) contrast(1.1) saturate(1.2)",
-                }}
-              />
+              <ChevronRight className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center justify-center gap-3 mt-6">
+              {galleryPhotos.map((photo, idx) => (
+                <button
+                  key={photo.src}
+                  type="button"
+                  onClick={() => {
+                    setSlideDirection(idx > currentSlide ? 1 : -1);
+                    setCurrentSlide(idx);
+                  }}
+                  className="w-2.5 h-2.5 rounded-full transition-all duration-300 hover:scale-125"
+                  style={{
+                    background:
+                      idx === currentSlide
+                        ? "oklch(0.55 0.22 25)"
+                        : "oklch(0.3 0.04 290)",
+                  }}
+                  aria-label={`Go to photo ${idx + 1}`}
+                  data-ocid={`gallery.item.${idx + 1}`}
+                />
+              ))}
+            </div>
+
+            <motion.div
+              className="flex items-center justify-center gap-3 mt-8"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.4 }}
+            >
               <div
-                className="absolute inset-0 transition-all duration-500 opacity-0 group-hover:opacity-100"
-                style={{
-                  boxShadow:
-                    "inset 0 0 0 2px oklch(0.55 0.22 25), inset 0 0 30px oklch(0.55 0.22 25 / 0.25)",
-                }}
-              />
-              <div
-                className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-500"
+                className="h-px w-24"
                 style={{
                   background:
-                    "linear-gradient(to top, oklch(0.04 0.01 290 / 0.95), transparent)",
-                  padding: "28px 16px 16px",
+                    "linear-gradient(to right, transparent, oklch(0.55 0.22 25 / 0.6))",
                 }}
+              />
+              <span
+                style={{ color: "oklch(0.55 0.22 25 / 0.7)", fontSize: "10px" }}
               >
-                <p
-                  className="text-center text-base"
-                  style={{
-                    fontFamily: "Parisienne, cursive",
-                    color: "oklch(0.85 0.08 30)",
-                  }}
-                >
-                  {galleryPhotos[2].caption}
-                </p>
-              </div>
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div
-                  className="w-7 h-7 flex items-center justify-center rounded-full"
-                  style={{ background: "oklch(0.55 0.22 25 / 0.8)" }}
-                >
-                  <Maximize2 className="w-3 h-3 text-white" />
-                </div>
-              </div>
+                ◆
+              </span>
+              <span
+                className="text-sm tracking-[0.3em] uppercase"
+                style={{ color: "oklch(0.5 0.08 300)" }}
+              >
+                MUSAA
+              </span>
+              <span
+                style={{ color: "oklch(0.55 0.22 25 / 0.7)", fontSize: "10px" }}
+              >
+                ◆
+              </span>
+              <div
+                className="h-px w-24"
+                style={{
+                  background:
+                    "linear-gradient(to left, transparent, oklch(0.55 0.22 25 / 0.6))",
+                }}
+              />
             </motion.div>
           </div>
-
-          {/* Hint text */}
-          <motion.div
-            className="flex items-center justify-center gap-3 mt-14"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.4 }}
-          >
-            <div
-              className="h-px w-24"
-              style={{
-                background:
-                  "linear-gradient(to right, transparent, oklch(0.55 0.22 25 / 0.6))",
-              }}
-            />
-            <span
-              style={{ color: "oklch(0.55 0.22 25 / 0.7)", fontSize: "10px" }}
-            >
-              ◆
-            </span>
-            <span
-              className="text-sm tracking-[0.3em] uppercase"
-              style={{ color: "oklch(0.5 0.08 300)" }}
-            >
-              Click to enlarge
-            </span>
-            <span
-              style={{ color: "oklch(0.55 0.22 25 / 0.7)", fontSize: "10px" }}
-            >
-              ◆
-            </span>
-            <div
-              className="h-px w-24"
-              style={{
-                background:
-                  "linear-gradient(to left, transparent, oklch(0.55 0.22 25 / 0.6))",
-              }}
-            />
-          </motion.div>
         </div>
       </section>
 
@@ -2208,7 +2116,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <WeddingWebsite />
-      <FlyingCompanion />
+
       <Toaster />
     </QueryClientProvider>
   );
