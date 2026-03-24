@@ -501,6 +501,13 @@ function HeroSection({
       data-ocid="hero.section"
       style={{ backgroundPositionY: `${parallaxY}px` }}
     >
+      {/* Hero background photo */}
+      <img
+        src="/assets/uploads/whatsapp_image_2026-03-24_at_7.53.48_am-019d1dab-3fd0-7052-8a18-d29b60706445-1.jpeg"
+        alt="Amnaya and Priyanshu background"
+        className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+        style={{ opacity: 0.35, filter: "grayscale(100%) brightness(0.4)" }}
+      />
       {/* Floating hearts in background */}
       {floatingElements.map((el) => (
         <motion.div
