@@ -1333,7 +1333,7 @@ function FAQSection() {
               }}
             >
               <img
-                src="/assets/uploads/whatsapp_image_2026-03-24_at_8.27.19_am-019d1dc9-d38d-7786-aff5-6b8e919b256c-1.jpeg"
+                src="/assets/uploads/fc4e1214-6455-46db-b984-ce80a67cef03-019d1e00-f879-7611-855a-2bae5f5483e5-1.jpeg"
                 alt="Amnaya and Priyanshu"
                 className="w-full h-full object-cover"
                 style={{
@@ -1598,7 +1598,7 @@ const galleryPhotos = [
     caption: "Under the Stars",
   },
   {
-    src: "/assets/uploads/whatsapp_image_2026-03-24_at_8.27.19_am-019d1dc9-d38d-7786-aff5-6b8e919b256c-1.jpeg",
+    src: "/assets/uploads/fc4e1214-6455-46db-b984-ce80a67cef03-019d1e00-f879-7611-855a-2bae5f5483e5-1.jpeg",
     caption: "Together Forever",
   },
   {
